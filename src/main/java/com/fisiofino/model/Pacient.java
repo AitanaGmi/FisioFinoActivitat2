@@ -12,6 +12,7 @@ import java.time.LocalDate;
 
 public class Pacient {
 
+    private int idPatient;
     private String givenName;
     private String familyName;
     private String dni;
@@ -23,6 +24,14 @@ public class Pacient {
     private String country;
     private String telephone;
     private String email;
+
+    public int getIdPatient() {
+        return idPatient;
+    }
+
+    public void setIdPatient(int idPatient) {
+        this.idPatient = idPatient;
+    }
 
     public String getGivenName() {
         return givenName;

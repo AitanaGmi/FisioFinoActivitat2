@@ -18,6 +18,11 @@ public class GestioPacients {
 
         int idPacient = 0;
 
+        Pacient pacientExistente = findBydniNie(p.getDni());
+        if (pacientExistente != null) {
+            return pacientExistente.getIdPatient();
+        }
+
         String sql = "INSERT INTO patient "
                 + "(given_name, family_name, nif, birth_date, gender, address, city, postal_code, country, telephone, email) "
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -72,7 +77,34 @@ public class GestioPacients {
             
         Pacient p = null;
 
-        /**************** HAS DE COMPLETAR EL CODI *******************/
+        String sql = "SELECT id_patient, given_name, family_name, nif, birth_date, gender, address, "
+                + "city, postal_code, country, telephone, email "
+                + "FROM patient WHERE nif = ?";
+
+        try (Connection conn = Connexio.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            ps.setString(1, dni_nie);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    p = new Pacient();
+                    p.setIdPatient(rs.getInt("id_patient"));
+                    p.setGivenName(rs.getString("given_name"));
+                    p.setFamilyName(rs.getString("family_name"));
+                    p.setDni(rs.getString("nif"));
+                    Date birthDate = rs.getDate("birth_date");
+                    p.setBirthDate(birthDate == null ? null : birthDate.toLocalDate());
+                    p.setGender(rs.getString("gender"));
+                    p.setAddress(rs.getString("address"));
+                    p.setCity(rs.getString("city"));
+                    p.setPostalCode(rs.getString("postal_code"));
+                    p.setCountry(rs.getString("country"));
+                    p.setTelephone(rs.getString("telephone"));
+                    p.setEmail(rs.getString("email"));
+                }
+            }
+        }
 
         return  p;
     }
@@ -120,6 +152,5 @@ public class GestioPacients {
         
         return esMalaltiaPacient;
     }
-
 
 }
