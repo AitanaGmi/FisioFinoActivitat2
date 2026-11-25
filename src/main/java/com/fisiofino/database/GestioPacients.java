@@ -113,7 +113,29 @@ public class GestioPacients {
     public List<MalaltiaPacient> findDiseaseBydniNie(String dni_nie) throws SQLException {
         List<MalaltiaPacient> malaltiespacient = new ArrayList<MalaltiaPacient>();
 
-        /**************** HAS DE COMPLETAR EL CODI *******************/    
+        String sql = "SELECT disease.snomed_code, disease.name, patient_disease.status, "
+                + "patient_disease.treatment, patient.nif "
+                + "FROM patient "
+                + "JOIN patient_disease ON patient.id_patient = patient_disease.id_patient "
+                + "JOIN disease ON patient_disease.snomed_code = disease.snomed_code "
+                + "WHERE patient.nif = ?";
+
+        try (Connection conn = Connexio.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, dni_nie);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    MalaltiaPacient mp = new MalaltiaPacient();
+                    mp.setCode(rs.getString("snomed_code"));
+                    mp.setName(rs.getString("name"));
+                    mp.setStatus(rs.getString("status"));
+                    mp.setTreatment(rs.getString("treatment"));
+                    mp.setDniPacient(rs.getString("nif"));
+                    malaltiespacient.add(mp);
+                }
+            }
+        }
 
         return malaltiespacient;
     }
