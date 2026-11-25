@@ -166,8 +166,32 @@ public class GestioPacients {
     public List<Pacient> findAllPacients () throws SQLException {
         List<Pacient> pacients = new ArrayList<>();
 
-        /**************** HAS DE COMPLETAR EL CODI *******************/
-        
+        String sql = "SELECT * FROM patient";
+
+        try (Connection conn = Connexio.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql);
+                ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+                Pacient p = new Pacient();
+                p.setIdPatient(rs.getInt("id_patient"));
+                p.setGivenName(rs.getString("given_name"));
+                p.setFamilyName(rs.getString("family_name"));
+                p.setDni(rs.getString("nif"));
+                Date birthDate = rs.getDate("birth_date");
+                p.setBirthDate(birthDate == null ? null : birthDate.toLocalDate());
+                p.setGender(rs.getString("gender"));
+                p.setAddress(rs.getString("address"));
+                p.setCity(rs.getString("city"));
+                p.setPostalCode(rs.getString("postal_code"));
+                p.setCountry(rs.getString("country"));
+                p.setTelephone(rs.getString("telephone"));
+                p.setEmail(rs.getString("email"));
+
+                pacients.add(p);
+            }
+        }
+        /*Con el while recorro todo lo dl paciente y lo añado a mi lista de pacientes */
         return pacients;
     }
 
