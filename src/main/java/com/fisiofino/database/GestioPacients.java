@@ -58,16 +58,38 @@ public class GestioPacients {
 
         boolean malaltiaCreada = false;
 
-        /**************** HAS DE COMPLETAR EL CODI *******************/
+        String sql = "INSERT INTO disease (snomed_code, name) VALUES (?, ?)";
+
+        try (Connection conn = Connexio.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, mp.getCode());
+            ps.setString(2, mp.getName());
+            malaltiaCreada = ps.executeUpdate() > 0;
+        }
         
         return malaltiaCreada;
     }    
 
     public boolean CreateMalaltiaPacient(MalaltiaPacient mp) throws SQLException {
-
+        /* Son casi tdas igual hacer try con la conexion y prepararlo cogiendo lo q quiero usar */
         boolean malaltiaPacientCreada = false;
 
-        /**************** HAS DE COMPLETAR EL CODI *******************/
+        Pacient pacient = findBydniNie(mp.getDniPacient());
+        if (pacient == null) {
+            return malaltiaPacientCreada;
+        }
+
+        String sql = "INSERT INTO patient_disease "
+                + "(id_patient, snomed_code, status, treatment) VALUES (?, ?, ?, ?)";
+
+        try (Connection conn = Connexio.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, pacient.getIdPatient());
+            ps.setString(2, mp.getCode());
+            ps.setString(3, mp.getStatus());
+            ps.setString(4, mp.getTreatment());
+            malaltiaPacientCreada = ps.executeUpdate() > 0;
+        }
         
         return malaltiaPacientCreada;
     }    
