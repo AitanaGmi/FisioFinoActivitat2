@@ -199,7 +199,17 @@ public class GestioPacients {
     public boolean updateStatus (int idPacient, String snomedCode, String status) throws SQLException {
         boolean modificat = false;
 
-        /**************** HAS DE COMPLETAR EL CODI *******************/
+        String sql = "UPDATE patient_disease SET status = ? "
+        + "WHERE id_patient = ? AND snomed_code = ?";
+
+        try (Connection conn = Connexio.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, status);
+            ps.setInt(2, idPacient);
+            ps.setString(3, snomedCode);
+
+            modificat = ps.executeUpdate() > 0;
+        }
 
         return  modificat;
     }
@@ -208,7 +218,16 @@ public class GestioPacients {
     public boolean findMalaltia (String SnomedCode) throws SQLException {
         boolean esMalaltia = false;
         
-        /**************** HAS DE COMPLETAR EL CODI *******************/
+        String sql = "SELECT * FROM disease WHERE snomed_code = ?";
+        try(Connection conn = Connexio.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, SnomedCode);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    esMalaltia = true;
+                }
+            }
+        }
         
         return esMalaltia;
     }
@@ -216,8 +235,22 @@ public class GestioPacients {
     public boolean findMalaltiaPacient (String dniPacient, String SnomedCode, String status) throws SQLException {
         boolean esMalaltiaPacient = false;
 
-        /**************** HAS DE COMPLETAR EL CODI *******************/
+        String sql = "SELECT * FROM patient_disease "
+                + "JOIN patient ON patient.id_patient = patient_disease.id_patient "
+                + "WHERE patient.nif = ? AND patient_disease.snomed_code = ? AND patient_disease.status = ?";
         
+        try(Connection conn = Connexio.getConnection();
+                PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, dniPacient);
+            ps.setString(2, SnomedCode);
+            ps.setString(3, status);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    esMalaltiaPacient = true;
+                }
+            }
+        }
+
         return esMalaltiaPacient;
     }
 
